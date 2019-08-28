@@ -34,8 +34,7 @@ namespace MasGloban.View
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddHttpClient<IScoreAPIClient, ScoreAPIClient>();
+            
             services.AddHttpClient<IEmployeeService, EmployeeService>();
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
