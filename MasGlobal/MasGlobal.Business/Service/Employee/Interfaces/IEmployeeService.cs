@@ -7,6 +7,6 @@ namespace MasGlobal.Business.Service.Employee.Interfaces
     public interface IEmployeeService
     {
         Task<IEnumerable<EmployeeDTO>> GetAll();
-        Task<EmployeeDTO> GetById();
+        Task<EmployeeDTO> GetById(int id);
     }
 }

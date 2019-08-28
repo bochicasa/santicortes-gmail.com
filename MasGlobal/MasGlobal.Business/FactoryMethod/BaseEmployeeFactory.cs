@@ -1,5 +1,6 @@
 ﻿
 using MasGlobal.Common.Model;
+using System;
 
 namespace MasGlobal.Business.FactoryMethod
 {
@@ -8,7 +9,7 @@ namespace MasGlobal.Business.FactoryMethod
         protected EmployeeDTO _employeeDTO;
         public BaseEmployeeFactory(EmployeeDTO employeeDTO)
         {
-            _employeeDTO = employeeDTO;
+            _employeeDTO = employeeDTO ?? throw new ArgumentNullException(nameof(employeeDTO));
         }
         public abstract IEmployee Create();
         public EmployeeDTO AnnualSalary()

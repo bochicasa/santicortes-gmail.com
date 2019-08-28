@@ -20,8 +20,8 @@ namespace MasGlobal.API.Controllers
 
         public EmployeeController(IEmployeeService employeeService, ILogger<EmployeeController> log)
         {
-            _employeeService = employeeService;
-            _log = log;
+            _employeeService = employeeService ?? throw new ArgumentNullException(nameof(employeeService));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         // GET api/values
@@ -34,27 +34,10 @@ namespace MasGlobal.API.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
-        }
-
-        // POST api/<controller>
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            EmployeeDTO employee = await _employeeService.GetById(id);
+            return Ok(employee);
         }
     }
 }

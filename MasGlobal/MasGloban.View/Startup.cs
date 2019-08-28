@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MasGlobal.Common.Config;
 using MasGloban.View.Services.Employee;
 using MasGloban.View.Services.Employee.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace MasGloban.View
 {
@@ -32,16 +34,20 @@ namespace MasGloban.View
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
-            services.AddTransient<IEmployeeService, EmployeeService>();
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //services.AddHttpClient<IScoreAPIClient, ScoreAPIClient>();
+            services.AddHttpClient<IEmployeeService, EmployeeService>();
+            services.AddOptions();
+            services.Configure<AppSettings>(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
+                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -49,7 +55,7 @@ namespace MasGloban.View
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            loggerFactory.AddFile(Configuration.GetValue<string>("EmployeeConfig:LogPath"));
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

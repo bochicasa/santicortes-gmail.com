@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using MasGlobal.Business.Service.Employee;
 using MasGlobal.Business.Service.Employee.Interfaces;
+using MasGlobal.Common.Config;
 using MasGlobal.DAL.MappingConfiguration;
 using MasGlobal.DAL.Repositories;
 using MasGlobal.DAL.Repositories.Interfaces;
@@ -41,7 +44,8 @@ namespace MasGlobal.API
 
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
-
+            services.AddOptions();
+            services.Configure<AppSettings>(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(options =>
             {
@@ -53,20 +57,26 @@ namespace MasGlobal.API
                     Description = "MasGlobal",
                     TermsOfService = "Test"
                 });
+                // Set the comments path for the Swagger JSON and UI.
+                //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                //options.IncludeXmlComments(xmlPath);
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
+                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
                 app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseHsts();
             }
+            loggerFactory.AddFile(Configuration.GetValue<string>("EmployeeConfig:LogPath"));
             app.UseSwagger().UseSwaggerUI(c => {
                 c.SwaggerEndpoint($"/swagger/v1/swagger.json", "MasGlobal API");
             });

@@ -1,7 +1,9 @@
-﻿using MasGlobal.Common.Model;
+﻿using MasGlobal.Common.Config;
+using MasGlobal.Common.Model;
 using MasGloban.View.Services.Employee.Interfaces;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,8 +18,8 @@ namespace MasGloban.View.Services.Employee
 
         public EmployeeService(HttpClient httpClient, IOptions<AppSettings> settings)
         {
-            _apiClient = httpClient;
-            _settings = settings;
+            _apiClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _employeeApiUrl = $"{_settings.Value.EmployeeApiUrl}";
         }
 
@@ -27,6 +29,5 @@ namespace MasGloban.View.Services.Employee
             List<EmployeeDTO> result = JsonConvert.DeserializeObject<List<EmployeeDTO>>(json);
             return result;
         }
-        
     }
 }
